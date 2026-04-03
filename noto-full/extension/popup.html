@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="shell">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">Noto</span>
+      </div>
+      <button class="settings-btn" id="settingsBtn" title="Settings">⚙</button>
+    </header>
+
+    <!-- Settings Panel -->
+    <div class="panel" id="settingsPanel" style="display:none;">
+      <div class="panel-title">AI Provider</div>
+
+      <div class="provider-grid">
+        <button class="provider-btn active" data-provider="groq">
+          <span class="provider-name">Groq</span>
+          <span class="provider-sub">Free · Fast</span>
+        </button>
+        <button class="provider-btn" data-provider="openai">
+          <span class="provider-name">OpenAI</span>
+          <span class="provider-sub">GPT-4o mini</span>
+        </button>
+        <button class="provider-btn" data-provider="anthropic">
+          <span class="provider-name">Claude</span>
+          <span class="provider-sub">Haiku 3.5</span>
+        </button>
+        <button class="provider-btn" data-provider="cohere">
+          <span class="provider-name">Cohere</span>
+          <span class="provider-sub">Command R</span>
+        </button>
+      </div>
+
+      <div class="key-row">
+        <label class="key-label" id="keyLabel">Groq API Key</label>
+        <a class="key-link" id="keyLink" href="https://console.groq.com" target="_blank">Get key ↗</a>
+      </div>
+      <input type="password" id="apiKeyInput" class="text-input" placeholder="Paste your API key…" autocomplete="off" />
+      <div class="key-security-note">🔒 Stored only on your device — never shared.</div>
+      <button class="btn btn-primary" id="saveKeyBtn">Save Key</button>
+      <div class="status-msg" id="keyStatus"></div>
+    </div>
+
+    <!-- Nav Tabs -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="timer">⏱ Focus</button>
+      <button class="tab" data-tab="notes">📝 Notes</button>
+      <button class="tab" data-tab="flashcards">🃏 Cards</button>
+      <button class="tab" data-tab="quiz">🎯 Quiz</button>
+    </nav>
+
+    <!-- ── TAB: TIMER ── -->
+    <div class="tab-content active" id="tab-timer">
+      <div class="timer-ring-wrap">
+        <svg class="timer-ring" viewBox="0 0 120 120">
+          <circle class="ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52"
+                  stroke-dasharray="326.7" stroke-dashoffset="0"/>
+        </svg>
+        <div class="timer-center">
+          <div class="timer-display" id="timerDisplay">25:00</div>
+          <div class="timer-label" id="timerLabel">Focus</div>
+        </div>
+      </div>
+      <div class="timer-controls">
+        <button class="btn btn-ghost" id="timerReset">↺</button>
+        <button class="btn btn-primary timer-big" id="timerToggle">Start</button>
+        <button class="btn btn-ghost" id="timerSkip">⏭</button>
+      </div>
+      <div class="session-row">
+        <span class="session-label">Session</span>
+        <div class="session-dots" id="sessionDots">
+          <span class="dot"></span><span class="dot"></span>
+          <span class="dot"></span><span class="dot"></span>
+        </div>
+      </div>
+      <div class="mode-pills">
+        <button class="pill active" data-mode="pomodoro" data-focus="25" data-break="5">Pomodoro</button>
+        <button class="pill" data-mode="short" data-focus="15" data-break="3">Short</button>
+        <button class="pill" data-mode="deep" data-focus="50" data-break="10">Deep Work</button>
+      </div>
+    </div>
+
+    <!-- ── TAB: NOTES ── -->
+    <div class="tab-content" id="tab-notes">
+      <div class="notes-toolbar">
+        <button class="btn btn-ghost btn-sm" id="clearNotesBtn">Clear</button>
+        <button class="btn btn-ghost btn-sm" id="exportNotesBtn">⬇ Export</button>
+      </div>
+      <div class="notes-list" id="notesList">
+        <div class="empty-state">
+          <span>📋</span>
+          <p>Highlight text on any page, then right-click → <em>Save to Noto</em></p>
+        </div>
+      </div>
+      <div class="notes-add-row">
+        <input type="text" class="text-input" id="manualNoteInput" placeholder="Type a note..." />
+        <button class="btn btn-primary btn-sm" id="addNoteBtn">Add</button>
+      </div>
+    </div>
+
+    <!-- ── TAB: FLASHCARDS ── -->
+    <div class="tab-content" id="tab-flashcards">
+      <div class="ai-source-row">
+        <span class="ai-label">Generate from</span>
+        <div class="source-pills">
+          <button class="pill active" data-source="selection">Selection</button>
+          <button class="pill" data-source="notes">My Notes</button>
+        </div>
+      </div>
+      <div class="ai-hint" id="fcHint">Select text on a page, then generate cards.</div>
+      <button class="btn btn-primary full" id="generateCardsBtn">
+        <span id="generateCardsBtnLabel">✦ Generate Flashcards</span>
+      </button>
+      <div id="flashcardsArea" style="display:none;">
+        <div class="card-nav">
+          <button class="btn btn-ghost btn-sm" id="prevCard">‹</button>
+          <span class="card-counter" id="cardCounter">1 / 1</span>
+          <button class="btn btn-ghost btn-sm" id="nextCard">›</button>
+        </div>
+        <div class="flashcard" id="flashcard">
+          <div class="flashcard-inner" id="flashcardInner">
+            <div class="flashcard-front" id="flashcardFront"></div>
+            <div class="flashcard-back" id="flashcardBack"></div>
+          </div>
+        </div>
+        <p class="flip-hint">Click card to flip</p>
+        <button class="btn btn-ghost btn-sm full" id="exportCardsBtn">⬇ Download Flashcards</button>
+      </div>
+      <div class="ai-status" id="fcStatus"></div>
+    </div>
+
+    <!-- ── TAB: QUIZ ── -->
+    <div class="tab-content" id="tab-quiz">
+      <div class="ai-source-row">
+        <span class="ai-label">Quiz from</span>
+        <div class="source-pills">
+          <button class="pill active" data-source="page">This Page</button>
+          <button class="pill" data-source="notes">My Notes</button>
+        </div>
+      </div>
+      <button class="btn btn-primary full" id="generateQuizBtn">
+        <span id="generateQuizBtnLabel">✦ Generate Quiz</span>
+      </button>
+      <div id="quizArea" style="display:none;">
+        <div class="quiz-progress-bar"><div id="quizProgressFill"></div></div>
+        <div class="quiz-q-num" id="quizQNum">Question 1 of 5</div>
+        <div class="quiz-question" id="quizQuestion"></div>
+        <div class="quiz-options" id="quizOptions"></div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+        <button class="btn btn-primary full" id="quizNextBtn" style="display:none;">Next →</button>
+        <div class="quiz-score" id="quizScore" style="display:none;"></div>
+        <button class="btn btn-ghost btn-sm full" id="exportQuizBtn" style="display:none;">⬇ Download Quiz</button>
+      </div>
+      <div class="ai-status" id="quizStatus"></div>
+    </div>
+
+    <!-- ── EXPORT MODAL ── -->
+    <div class="modal-overlay" id="exportModal" style="display:none;">
+      <div class="modal">
+        <div class="modal-title">Download as…</div>
+        <div class="modal-options">
+          <button class="modal-opt" data-fmt="txt">📄 Text (.txt)</button>
+          <button class="modal-opt" data-fmt="csv">📊 CSV (.csv)</button>
+          <button class="modal-opt" data-fmt="json">🗂 JSON (.json)</button>
+          <button class="modal-opt" data-fmt="md">✍ Markdown (.md)</button>
+        </div>
+        <button class="btn btn-ghost btn-sm full" id="modalCancel">Cancel</button>
+      </div>
+    </div>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

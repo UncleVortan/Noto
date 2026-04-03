@@ -1,0 +1,122 @@
+/* ═══════════════════════════════════════════════════════
+   Noto content.css — floating page pill
+   All classes prefixed sm- to avoid collisions
+═══════════════════════════════════════════════════════ */
+
+#noto-pill {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2147483647;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 13px;
+  animation: noto-slideIn 0.4s cubic-bezier(.2,0,.2,1) forwards;
+}
+
+/* ── Trigger pill ── */
+#noto-pill-trigger {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #0e0e10;
+  border: 1px solid #f5a623;
+  border-radius: 999px;
+  padding: 8px 14px 8px 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(245, 166, 35, 0.25), 0 2px 8px rgba(0,0,0,0.5);
+  transition: box-shadow 0.2s, transform 0.2s;
+  user-select: none;
+}
+#noto-pill-trigger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(245, 166, 35, 0.35), 0 4px 12px rgba(0,0,0,0.6);
+}
+.noto-icon  { color: #f5a623; font-size: 15px; line-height: 1; }
+.noto-label { color: #f0ede8; font-weight: 600; font-size: 12px; letter-spacing: 0.02em; }
+
+/* ── Dropdown menu ── */
+#noto-pill-menu {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  width: 240px;
+  background: #17171a;
+  border: 1px solid #2a2a30;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.7);
+  animation: noto-menuIn 0.2s ease;
+}
+
+.noto-menu-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #5a5760;
+  margin-bottom: 2px;
+}
+
+.noto-action {
+  background: #1f1f24;
+  border: 1px solid #2a2a30;
+  color: #f0ede8;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, color 0.15s;
+  width: 100%;
+}
+.noto-action:hover {
+  border-color: #f5a623;
+  color: #f5a623;
+}
+
+/* ── Result area ── */
+#noto-result {
+  background: #1f1f24;
+  border: 1px solid #2a2a30;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 11px;
+  color: #8a8794;
+  line-height: 1.6;
+  max-height: 120px;
+  overflow-y: auto;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* ── Dismiss ── */
+.noto-dismiss {
+  background: none;
+  border: none;
+  color: #5a5760;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+  padding: 2px;
+  transition: color 0.15s;
+  width: 100%;
+}
+.noto-dismiss:hover { color: #e05c5c; }
+
+/* ── Animations ── */
+@keyframes noto-slideIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes noto-fadeOut {
+  to { opacity: 0; transform: translateY(10px); }
+}
+@keyframes noto-menuIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
