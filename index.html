@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Noto — Study Smarter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ░░ SIDEBAR ░░ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <div class="wordmark">
+      <span class="wordmark-n">N</span><span class="wordmark-rest">oto</span>
+    </div>
+    <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">‹</button>
+  </div>
+
+  <nav class="nav">
+    <button class="nav-item active" data-view="dashboard">
+      <span class="nav-icon">◈</span><span class="nav-label">Dashboard</span>
+    </button>
+    <button class="nav-item" data-view="notes">
+      <span class="nav-icon">✦</span><span class="nav-label">Notes</span>
+    </button>
+    <button class="nav-item" data-view="flashcards">
+      <span class="nav-icon">⬡</span><span class="nav-label">Flashcards</span>
+    </button>
+    <button class="nav-item" data-view="quiz">
+      <span class="nav-icon">◎</span><span class="nav-label">Quiz</span>
+    </button>
+    <button class="nav-item" data-view="chat">
+      <span class="nav-icon">⟁</span><span class="nav-label">AI Chat</span>
+    </button>
+    <button class="nav-item" data-view="timer">
+      <span class="nav-icon">◷</span><span class="nav-label">Focus</span>
+    </button>
+    <button class="nav-item" data-view="stats">
+      <span class="nav-icon">⬘</span><span class="nav-label">Stats</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <button class="nav-item" data-view="settings">
+      <span class="nav-icon">⚙</span><span class="nav-label">Settings</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ░░ MAIN ░░ -->
+<main class="main" id="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="menu-btn" id="menuBtn">☰</button>
+      <span class="view-title" id="viewTitle">Dashboard</span>
+    </div>
+    <div class="topbar-right">
+      <div class="provider-badge" id="providerBadge">Groq</div>
+      <button class="topbar-btn" id="importBtn" title="Import data">↑ Import</button>
+      <button class="topbar-btn" id="exportBtn" title="Export data">↓ Export</button>
+    </div>
+  </div>
+
+  <!-- ▸ DASHBOARD -->
+  <section class="view active" id="view-dashboard">
+    <div class="dash-hero">
+      <div class="dash-greeting" id="dashGreeting">Good morning.</div>
+      <div class="dash-sub">What are you studying today?</div>
+    </div>
+    <div class="dash-grid">
+      <div class="dash-card" data-goto="notes">
+        <div class="dash-card-icon">✦</div>
+        <div class="dash-card-label">Notes</div>
+        <div class="dash-card-count" id="statNotesCount">0</div>
+      </div>
+      <div class="dash-card" data-goto="flashcards">
+        <div class="dash-card-icon">⬡</div>
+        <div class="dash-card-label">Flashcard Sets</div>
+        <div class="dash-card-count" id="statSetsCount">0</div>
+      </div>
+      <div class="dash-card" data-goto="quiz">
+        <div class="dash-card-icon">◎</div>
+        <div class="dash-card-label">Quizzes Taken</div>
+        <div class="dash-card-count" id="statQuizCount">0</div>
+      </div>
+      <div class="dash-card" data-goto="timer">
+        <div class="dash-card-icon">◷</div>
+        <div class="dash-card-label">Focus Minutes</div>
+        <div class="dash-card-count" id="statFocusCount">0</div>
+      </div>
+    </div>
+    <div class="dash-recent">
+      <div class="section-label">Recent Notes</div>
+      <div class="recent-list" id="recentNotesList"></div>
+    </div>
+    <div class="dash-streak">
+      <div class="section-label">This Week</div>
+      <div class="streak-bar" id="streakBar"></div>
+    </div>
+  </section>
+
+  <!-- ▸ NOTES -->
+  <section class="view" id="view-notes">
+    <div class="view-header">
+      <h1 class="view-h1">Notes</h1>
+      <div class="view-actions">
+        <input type="text" class="search-input" id="noteSearch" placeholder="Search notes…"/>
+        <button class="btn btn-primary" id="newNoteBtn">+ New Note</button>
+      </div>
+    </div>
+
+    <div class="notes-layout">
+      <!-- Note list -->
+      <div class="notes-sidebar" id="notesSidebar">
+        <div class="notes-list" id="notesList"></div>
+      </div>
+      <!-- Note editor -->
+      <div class="note-editor" id="noteEditor">
+        <div class="note-editor-empty" id="noteEditorEmpty">
+          <span>✦</span>
+          <p>Select a note or create a new one</p>
+        </div>
+        <div class="note-editor-active" id="noteEditorActive" style="display:none;">
+          <input type="text" class="note-title-input" id="noteTitleInput" placeholder="Note title…"/>
+          <div class="note-meta" id="noteMeta"></div>
+          <textarea class="note-body-input" id="noteBodyInput" placeholder="Start writing…"></textarea>
+          <div class="note-editor-bar">
+            <button class="btn btn-ghost btn-sm" id="aiSummariseNoteBtn">✦ Summarise</button>
+            <button class="btn btn-ghost btn-sm" id="noteToCardsBtn">⬡ Make Cards</button>
+            <button class="btn btn-danger btn-sm" id="deleteNoteBtn">Delete</button>
+          </div>
+          <div class="ai-result-box" id="noteAiResult" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PDF Upload area -->
+    <div class="pdf-drop-zone" id="pdfDropZone">
+      <div class="pdf-drop-inner">
+        <span class="pdf-drop-icon">⬆</span>
+        <span>Drop a PDF or text file here to import as a note</span>
+        <input type="file" id="pdfInput" accept=".pdf,.txt,.md" style="display:none;"/>
+        <button class="btn btn-ghost btn-sm" id="pdfBrowseBtn">Browse file</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ▸ FLASHCARDS -->
+  <section class="view" id="view-flashcards">
+    <div class="view-header">
+      <h1 class="view-h1">Flashcards</h1>
+      <button class="btn btn-primary" id="generateCardsBtn">✦ Generate from Note</button>
+    </div>
+
+    <div class="fc-layout">
+      <!-- Sets list -->
+      <div class="fc-sets-panel">
+        <div class="section-label">Your Sets</div>
+        <div class="fc-sets-list" id="fcSetsList">
+          <div class="empty-hint">No sets yet. Generate cards from a note.</div>
+        </div>
+      </div>
+
+      <!-- Card viewer -->
+      <div class="fc-viewer" id="fcViewer">
+        <div class="fc-viewer-empty">
+          <span>⬡</span>
+          <p>Select a set to study</p>
+        </div>
+        <div class="fc-viewer-active" id="fcViewerActive" style="display:none;">
+          <div class="fc-set-title" id="fcSetTitle"></div>
+          <div class="fc-card-wrap">
+            <div class="fc-card" id="fcCard">
+              <div class="fc-card-inner">
+                <div class="fc-card-front" id="fcCardFront"></div>
+                <div class="fc-card-back" id="fcCardBack"></div>
+              </div>
+            </div>
+          </div>
+          <p class="fc-flip-hint">Click card to flip</p>
+          <div class="fc-nav">
+            <button class="btn btn-ghost" id="fcPrev">‹ Prev</button>
+            <span class="fc-counter" id="fcCounter">1 / 1</span>
+            <button class="btn btn-ghost" id="fcNext">Next ›</button>
+          </div>
+          <div class="fc-actions">
+            <button class="btn btn-ghost btn-sm" id="fcExportBtn">⬇ Export</button>
+            <button class="btn btn-danger btn-sm" id="fcDeleteSetBtn">Delete Set</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generate modal -->
+    <div class="modal-overlay" id="genCardsModal" style="display:none;">
+      <div class="modal">
+        <div class="modal-title">Generate Flashcards</div>
+        <div class="modal-label">Pick a note to generate from</div>
+        <select class="modal-select" id="genCardsNoteSelect"></select>
+        <div class="modal-label">Number of cards</div>
+        <div class="modal-pills" id="cardCountPills">
+          <button class="pill active" data-n="5">5</button>
+          <button class="pill" data-n="10">10</button>
+          <button class="pill" data-n="15">15</button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="genCardsCancel">Cancel</button>
+          <button class="btn btn-primary" id="genCardsConfirm">✦ Generate</button>
+        </div>
+        <div class="modal-status" id="genCardsStatus"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ▸ QUIZ -->
+  <section class="view" id="view-quiz">
+    <div class="view-header">
+      <h1 class="view-h1">Quiz</h1>
+      <button class="btn btn-primary" id="startQuizBtn">✦ New Quiz</button>
+    </div>
+
+    <div class="quiz-layout">
+      <div class="quiz-history-panel">
+        <div class="section-label">Past Quizzes</div>
+        <div class="quiz-history-list" id="quizHistoryList">
+          <div class="empty-hint">No quizzes yet.</div>
+        </div>
+      </div>
+
+      <div class="quiz-main-panel" id="quizMainPanel">
+        <div class="quiz-idle">
+          <span>◎</span>
+          <p>Start a quiz to test your knowledge</p>
+        </div>
+        <div class="quiz-active" id="quizActive" style="display:none;">
+          <div class="quiz-progress-bar"><div id="quizProgressFill"></div></div>
+          <div class="quiz-q-num" id="quizQNum"></div>
+          <div class="quiz-question" id="quizQuestion"></div>
+          <div class="quiz-options" id="quizOptions"></div>
+          <div class="quiz-feedback" id="quizFeedback"></div>
+          <button class="btn btn-primary" id="quizNextBtn" style="display:none;">Next →</button>
+          <div class="quiz-score-card" id="quizScoreCard" style="display:none;">
+            <div class="quiz-score-num" id="quizScoreNum"></div>
+            <div class="quiz-score-msg" id="quizScoreMsg"></div>
+            <button class="btn btn-ghost" id="quizExportBtn">⬇ Export</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz setup modal -->
+    <div class="modal-overlay" id="quizSetupModal" style="display:none;">
+      <div class="modal">
+        <div class="modal-title">New Quiz</div>
+        <div class="modal-label">Source</div>
+        <select class="modal-select" id="quizSourceSelect">
+          <option value="note">From a Note</option>
+          <option value="cards">From a Flashcard Set</option>
+        </select>
+        <div id="quizNoteRow">
+          <div class="modal-label">Pick Note</div>
+          <select class="modal-select" id="quizNoteSelect"></select>
+        </div>
+        <div id="quizCardsRow" style="display:none;">
+          <div class="modal-label">Pick Set</div>
+          <select class="modal-select" id="quizCardsSelect"></select>
+        </div>
+        <div class="modal-label">Questions</div>
+        <div class="modal-pills" id="quizCountPills">
+          <button class="pill active" data-n="5">5</button>
+          <button class="pill" data-n="10">10</button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="quizSetupCancel">Cancel</button>
+          <button class="btn btn-primary" id="quizSetupConfirm">Start Quiz</button>
+        </div>
+        <div class="modal-status" id="quizSetupStatus"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ▸ AI CHAT -->
+  <section class="view" id="view-chat">
+    <div class="view-header">
+      <h1 class="view-h1">AI Chat</h1>
+      <div class="view-actions">
+        <select class="select-input" id="chatContextSelect">
+          <option value="">No context (general)</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" id="clearChatBtn">Clear</button>
+      </div>
+    </div>
+    <div class="chat-layout">
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-welcome">
+          <span class="chat-welcome-icon">⟁</span>
+          <p>Ask anything. Attach a note as context for smarter answers.</p>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <textarea class="chat-input" id="chatInput" placeholder="Ask a question…" rows="1"></textarea>
+        <button class="btn btn-primary chat-send" id="chatSendBtn">Send</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ▸ FOCUS TIMER -->
+  <section class="view" id="view-timer">
+    <div class="view-header">
+      <h1 class="view-h1">Focus Timer</h1>
+    </div>
+    <div class="timer-layout">
+      <div class="timer-ring-wrap">
+        <svg class="timer-ring" viewBox="0 0 200 200">
+          <circle class="ring-bg" cx="100" cy="100" r="88"/>
+          <circle class="ring-fg" id="ringFg" cx="100" cy="100" r="88"
+                  stroke-dasharray="553" stroke-dashoffset="0"/>
+        </svg>
+        <div class="timer-center">
+          <div class="timer-display" id="timerDisplay">25:00</div>
+          <div class="timer-label" id="timerLabel">Focus</div>
+        </div>
+      </div>
+
+      <div class="timer-controls">
+        <button class="btn btn-ghost timer-ctrl" id="timerReset">↺ Reset</button>
+        <button class="btn btn-primary timer-ctrl timer-main" id="timerToggle">Start</button>
+        <button class="btn btn-ghost timer-ctrl" id="timerSkip">Skip ⏭</button>
+      </div>
+
+      <div class="timer-sessions">
+        <div class="section-label">Session</div>
+        <div class="session-dots" id="sessionDots">
+          <span class="dot"></span><span class="dot"></span>
+          <span class="dot"></span><span class="dot"></span>
+        </div>
+      </div>
+
+      <div class="timer-modes">
+        <button class="pill active" data-mode="pomodoro" data-focus="25" data-break="5">Pomodoro 25/5</button>
+        <button class="pill" data-mode="short" data-focus="15" data-break="3">Short 15/3</button>
+        <button class="pill" data-mode="deep" data-focus="50" data-break="10">Deep Work 50/10</button>
+      </div>
+
+      <div class="timer-today">
+        <div class="section-label">Today</div>
+        <div class="timer-today-stat"><span id="todayFocusMin">0</span> min focused · <span id="todaySessions">0</span> sessions</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ▸ STATS -->
+  <section class="view" id="view-stats">
+    <div class="view-header">
+      <h1 class="view-h1">Stats</h1>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-label">Total Notes</div>
+        <div class="stat-card-num" id="s-notes">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Flashcard Sets</div>
+        <div class="stat-card-num" id="s-sets">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Total Cards</div>
+        <div class="stat-card-num" id="s-cards">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Quizzes Taken</div>
+        <div class="stat-card-num" id="s-quizzes">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Avg Quiz Score</div>
+        <div class="stat-card-num" id="s-avg">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Focus Minutes</div>
+        <div class="stat-card-num" id="s-focus">0</div>
+      </div>
+    </div>
+
+    <div class="stats-section">
+      <div class="section-label">Quiz History</div>
+      <div class="stats-quiz-list" id="statsQuizList"></div>
+    </div>
+
+    <div class="stats-section">
+      <div class="section-label">Study Activity (Last 7 Days)</div>
+      <div class="activity-chart" id="activityChart"></div>
+    </div>
+  </section>
+
+  <!-- ▸ SETTINGS -->
+  <section class="view" id="view-settings">
+    <div class="view-header">
+      <h1 class="view-h1">Settings</h1>
+    </div>
+    <div class="settings-layout">
+
+      <div class="settings-group">
+        <div class="settings-group-title">AI Provider</div>
+        <div class="provider-grid">
+          <button class="provider-btn active" data-provider="groq">
+            <span class="provider-name">Groq</span>
+            <span class="provider-sub">Free · Fast · EU OK</span>
+          </button>
+          <button class="provider-btn" data-provider="openai">
+            <span class="provider-name">OpenAI</span>
+            <span class="provider-sub">GPT-4o mini</span>
+          </button>
+          <button class="provider-btn" data-provider="anthropic">
+            <span class="provider-name">Claude</span>
+            <span class="provider-sub">Haiku 3.5</span>
+          </button>
+          <button class="provider-btn" data-provider="cohere">
+            <span class="provider-name">Cohere</span>
+            <span class="provider-sub">Command R · Free tier</span>
+          </button>
+        </div>
+        <div class="settings-key-row">
+          <label class="settings-label" id="settingsKeyLabel">Groq API Key</label>
+          <a class="settings-link" id="settingsKeyLink" href="https://console.groq.com" target="_blank">Get free key ↗</a>
+        </div>
+        <input type="password" class="text-input" id="settingsKeyInput" placeholder="Paste your API key…" autocomplete="off"/>
+        <div class="settings-security">🔒 Stored only in your browser — never sent anywhere except the chosen provider.</div>
+        <button class="btn btn-primary" id="settingsSaveKey">Save Key</button>
+        <div class="settings-status" id="settingsKeyStatus"></div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">Data</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Export all data</div>
+            <div class="settings-hint">Download a JSON backup of all your notes, cards and stats.</div>
+          </div>
+          <button class="btn btn-ghost" id="exportAllBtn">⬇ Export</button>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Import data</div>
+            <div class="settings-hint">Restore from a Noto JSON backup.</div>
+          </div>
+          <button class="btn btn-ghost" id="importAllBtn">↑ Import</button>
+          <input type="file" id="importFileInput" accept=".json" style="display:none;"/>
+        </div>
+        <div class="settings-row danger-row">
+          <div>
+            <div class="settings-label">Clear all data</div>
+            <div class="settings-hint">Permanently delete everything stored in Noto.</div>
+          </div>
+          <button class="btn btn-danger" id="clearAllBtn">Clear</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ░░ EXPORT FORMAT MODAL ░░ -->
+<div class="modal-overlay" id="exportFmtModal" style="display:none;">
+  <div class="modal">
+    <div class="modal-title">Export format</div>
+    <div class="modal-options">
+      <button class="modal-opt" data-fmt="txt">📄 Text (.txt)</button>
+      <button class="modal-opt" data-fmt="csv">📊 CSV (.csv)</button>
+      <button class="modal-opt" data-fmt="json">🗂 JSON (.json)</button>
+      <button class="modal-opt" data-fmt="md">✍ Markdown (.md)</button>
+    </div>
+    <button class="btn btn-ghost btn-sm full" id="exportFmtCancel">Cancel</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
