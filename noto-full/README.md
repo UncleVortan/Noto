@@ -2,8 +2,6 @@
 
 > A free, open-source AI-powered study app that runs entirely in your browser.
 
-![Noto Screenshot](docs/screenshot.png)
-
 **Noto** helps you study smarter — take notes, generate flashcards, run quizzes, chat with your documents, and track your focus sessions. Everything is stored locally in your browser. No account, no server, no data collection.
 
 ---
